@@ -1,5 +1,19 @@
 import cv2
 import mediapipe as mp
+import numpy as np
+
+def calculate_angle(x, y, z):
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+    
+    angleRadians = np.arctan2(z[1] - y[1], z[0] - y[0]) - np.arctan2(x[1] - y[1], x[0] - y[0])
+    angleDegrees = np.abs(angleRadians * 180.0 / np.pi)
+    
+    if angleDegrees > 180.0:
+        angleDegrees = 360 - angleDegrees
+        
+    return angleDegrees
 
 # init MediaPip pose model
 mp_pose = mp.solutions.pose
@@ -22,6 +36,22 @@ while cam.isOpened():
     # landmarks and connections
     if processed.pose_landmarks:
         mp_draw.draw_landmarks(frame, processed.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        
+        left_hip = (processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].x,
+                    processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].y)
+        left_knee = (processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].x,
+                    processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y)
+        left_ankle = (processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].x,
+                    processed.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y)
+        
+        knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
+        
+        if knee_angle < 90:
+            cv2.putText(frame, "Squat too low!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        elif knee_angle > 110:
+            cv2.putText(frame, "Squat not deep enough!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        else: 
+            cv2.putText(frame, "Nice squat!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)            
     
     cv2.imshow('Pose Estimation', frame)
     
