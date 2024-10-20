@@ -1,7 +1,8 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import torch
+import torch 
+import requests
 from app.models.pose_correction_model import PoseCorrectionModel
 
 
@@ -17,6 +18,11 @@ def calculate_angle(x, y, z):
         angleDegrees = 360 - angleDegrees
         
     return angleDegrees
+
+def send_to_chatbot(message):
+    response = requests.post('http://localhost:5000/chatbot', json={'message': message})
+    return response.json()
+
 
 
 # init MediaPip pose model
@@ -58,6 +64,8 @@ while cam.isOpened():
         knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
         
         if knee_angle < 90:
+            feedback = "Squat too deep!"
+            send_to_chatbot("What do you think of my squat form?")
             cv2.putText(frame, "Squat too low!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         elif knee_angle > 110:
             cv2.putText(frame, "Squat not deep enough!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
