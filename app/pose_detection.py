@@ -20,8 +20,19 @@ def calculate_angle(x, y, z):
     return angleDegrees
 
 def send_to_chatbot(message):
-    response = requests.post('http://localhost:5000/chatbot', json={'message': message})
-    return response.json()
+    try:
+        response = requests.post('http://localhost:5000/chatbot', json={'message': message})
+        response.raise_for_status()  # Ensure the response is successful
+        return response.json()  # Attempt to parse JSON
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+        return {"error": "HTTP error"}
+    except requests.exceptions.JSONDecodeError:
+        print("Failed to decode JSON response from chatbot")
+        return {"error": "Invalid JSON response"}
+    except Exception as err:
+        print(f"An unexpected error occurred: {err}")
+        return {"error": "An unexpected error occurred"}
 
 
 def start_pose_detection():

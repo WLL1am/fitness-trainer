@@ -13,17 +13,52 @@
 </head>
 <body>
     <h1>Fitness Trainer</h1>
+    
     <video id="video" autoplay></video>
+    
+    <input type="text" id="message" placeholder="Enter your message">
+    <button id="sendMessageBtn">Send Message to Chatbot</button>
+    <p id="response"></p>
+    
     <script>
         const video = document.getElementById('video');
 
-        navigator.mediaDevices.getUserMedia({ video: true})
+        navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
             })
             .catch(err => {
                 console.error("Error accessing camera: ", err);
             });
+
+        // Chatbot interaction
+        document.getElementById('sendMessageBtn').addEventListener('click', () => {
+            const message = document.getElementById('message').value;
+            
+            // Make sure the user has entered a message
+            if (!message) {
+                document.getElementById('response').innerText = "Please enter a message.";
+                return;
+            }
+
+            // Send the message to the chatbot API via POST request
+            fetch('http://127.0.0.1:5000/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the chatbot's response
+                document.getElementById('response').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').innerText = 'Error sending message to chatbot.';
+            });
+        });
     </script>
 </body>
 </html>
