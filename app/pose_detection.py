@@ -1,6 +1,9 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+import torch
+from app.models.pose_correction_model import PoseCorrectionModel
+
 
 def calculate_angle(x, y, z):
     x = np.array(x)
@@ -15,10 +18,18 @@ def calculate_angle(x, y, z):
         
     return angleDegrees
 
+
 # init MediaPip pose model
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 mp_draw = mp.solutions.drawing_utils
+model = PoseCorrectionModel()
+model.eval()
+
+dummy_input = torch.randn(1, 34)
+with torch.no_grad():
+    output = model(dummy_input)
+    print(output)
 
 # init webcam
 cam = cv2.VideoCapture(0)
