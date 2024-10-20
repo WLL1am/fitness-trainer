@@ -5,7 +5,7 @@ class PoseCorrectionModel(nn.Module):
     def __init__(self):
         super(PoseCorrectionModel, self).__init__()
         self.fc1 = nn.Linear(34, 64)
-        self.fc1 = nn.Linear(64, 32)
+        self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, 3)
         
     def forward(self, x):

@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 import torch 
 import requests
-from app.models.pose_correction_model import PoseCorrectionModel
+from models.pose_correction_model import PoseCorrectionModel
 
 
 def calculate_angle(x, y, z):
