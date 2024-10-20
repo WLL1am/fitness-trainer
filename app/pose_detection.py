@@ -74,11 +74,11 @@ def start_pose_detection():
             
             knee_angle = calculate_angle(left_hip, left_knee, left_ankle)
             
-            if knee_angle < 90:
+            if knee_angle < 80:
                 feedback = "Squat too deep!"
                 send_to_chatbot("What do you think of my squat form?")
                 cv2.putText(frame, "Squat too low!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            elif knee_angle > 110:
+            elif knee_angle > 120:
                 cv2.putText(frame, "Squat not deep enough!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else: 
                 cv2.putText(frame, "Nice squat!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)            
